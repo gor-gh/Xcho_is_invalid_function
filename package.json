@@ -5,19 +5,47 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "electron:build": "vue-cli-service electron:build",
+    "electron:serve": "vue-cli-service electron:serve",
+    "postinstall": "electron-builder install-app-deps",
+    "postuninstall": "electron-builder install-app-deps"
   },
+  "main": "background.js",
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.15",
+    "@fortawesome/free-solid-svg-icons": "^5.7.2",
+    "@fortawesome/vue-fontawesome": "^0.1.5",
+    "@fullcalendar/core": "^4.3.1",
+    "@fullcalendar/daygrid": "^4.3.0",
+    "@fullcalendar/list": "^4.3.0",
+    "@fullcalendar/timegrid": "^4.3.0",
+    "bootstrap": "^4.3.1",
+    "bootstrap-vue": "^2.0.1",
     "core-js": "^2.6.5",
-    "vue": "^2.6.10"
+    "electron": "^6.0.10",
+    "express": "^4.17.1",
+    "fullcalendar-scheduler": "^1.10.0",
+    "jquery": "^3.4.1",
+    "moment": "^2.24.0",
+    "mysql": "^2.17.1",
+    "socket.io": "^2.3.0",
+    "socket.io-client": "^2.3.0",
+    "uws": "^100.0.1",
+    "vue": "^2.6.10",
+    "vue-full-calendar": "^2.7.0",
+    "vue-material": "^1.0.0-beta-11"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.11.0",
     "@vue/cli-plugin-eslint": "^3.11.0",
     "@vue/cli-service": "^3.11.0",
     "babel-eslint": "^10.0.1",
+    "electron": "^6.0.0",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
+    "vue-cli-plugin-electron-builder": "^1.4.0",
+    "vue-cli-plugin-fontawesome": "^0.2.0",
     "vue-template-compiler": "^2.6.10"
   },
   "eslintConfig": {
