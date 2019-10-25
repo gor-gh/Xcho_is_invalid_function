@@ -8,16 +8,10 @@ import {
 import { listenerCount } from 'cluster';
 const isDevelopment = process.env.NODE_ENV !== 'production'
 const path = require('path');
-const mysql = require('mysql');
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'aldebaran1.mysql',
-  database: 'mydb'
-})
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let win
+let win;
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: { secure: true, standard: true } }])
@@ -87,7 +81,7 @@ app.on('ready', async () => {
     // }
 
   }
-  createWindow()
+  createWindow();
 })
 
 // Exit cleanly on request from parent process in development mode.

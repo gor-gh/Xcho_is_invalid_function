@@ -1,17 +1,24 @@
 <template>    
   <div class="calendar_cont"> 
     <full-calendar ref="fullCalendar" :config="config" :events="events" />
-    <EventCloud v-show="flagForCloudVisibility" :flagVis="flagForCloudVisibility" :cloudOp="cloudOptions" @ShowCloud="showCloud"
-    @HideCloud="hideCloud"/>
+    <EventCloud 
+      v-show="flagForCloudVisibility" 
+      @ShowCloud="showCloud"
+      @HideCloud="hideCloud"
+      :flagVis="flagForCloudVisibility" 
+      :cloudOp="cloudOptions"
+    /> 
   </div>
 </template>
 
 <script>
 import EventCloud from './EventCloud.vue';
+// import axios from 'axios';
 
 export default {
   name: "hello",
   props: {
+    mySize:Number,
     calendarHeight:String,
     viewName: String,
     filterAcc:Boolean,
@@ -20,16 +27,21 @@ export default {
   },
   data() {
     return {
-      
     day: new Date(),      
     // calendarPlugins:[dayGridPlugin,timeGridPlugin,listPlugin],
     flagForCloudVisibility: false,
+    notifyMeBefore:'',
     cloudOptions: {
       eventCloudMessage: '',
       eventStartTime: '',
+      eventOwnerName: '',
+      eventOwnerLastName:'',
     },
+    messageForUpcomingEvent: 'There is an upcoming event',
+    messageForWaitingEvents: 'Click to watch full info',
     displayEventCloud:false,  
     count:0,
+    notificArr:[],
     // socket : io('localhost:8080'),
     winHeight : window.outerHeight,
         events: [
@@ -38,9 +50,11 @@ export default {
             groupId: 'waiting',
             className: ["fc-day-grid-event", "fc-h-event", "fc-event", "fc-start", "fc-end", "fc-draggable","show"],
             title: 'click to learn more',
-            start: '2019-09-25T13:00',
+            start: '2019-10-28T13:00',
             duration: '01:00',
             backgroundColor: '#F9AA0D',
+            firstName: 'Vahagn',
+            lastName: 'Melkonyan',
             message: 'verevi dzax atami plomb piti drvi'
           },
           {
@@ -48,42 +62,47 @@ export default {
             groupId: 'accepted',
             className: ["fc-day-grid-event", "fc-h-event", "fc-event", "fc-start", "fc-end", "fc-draggable","show"],
             title: 'click to learn more',
-            start: '2019-09-27T15:00',
+            start: '2019-10-27T15:00',
             duration: '02:00',
             backgroundColor: '#25F90D',
+            firstName: 'Gor',
+            lastName: 'Gharagyozyan',
             message: 'verevi dzax atami plomb piti drvi'
-
           },
           {
             id: 2,
             groupId: 'declined',
             className: ["fc-day-grid-event", "fc-h-event", "fc-event", "fc-start", "fc-end", "fc-draggable","show"],
             title: 'click to repair',
-            start: '2019-09-29T17:00',
+            start: '2019-10-29T17:00',
             duration: '01:30',
             backgroundColor: '#D40B1F',
+            firstName: 'Karen',
+            lastName: 'Makaryan',
             message: 'verevi dzax atami plomb piti drvi'
-
           },
           {
             id:3,
             groupId: 'accepted',
             className: ["fc-day-grid-event", "fc-h-event", "fc-event", "fc-start", "fc-end", "fc-draggable","show"],
             title: 'click to learn more',
-            start: '2019-09-22T15:00',
+            start: '2019-10-25T03:01',
             duration: '02:00',
             backgroundColor: '#25F90D',
+            firstName: 'Khachatur',
+            lastName: 'Ghukasyan',
             message: 'verevi dzax atami plomb piti drvi'
-
           },
           {
             id: 4,
             groupId: 'declined',
             className: ["fc-day-grid-event", "fc-h-event", "fc-event", "fc-start", "fc-end", "fc-draggable","show"],
             title: 'click to repair',
-            start: '2019-09-30T17:00',
+            start: '2019-10-24T18:55',
             duration: '01:30',
             backgroundColor: '#D40B1F',
+            firstName: 'Vardan',
+            lastName: 'Sahakyan',
             message: 'verevi dzax atami plomb piti drvi'
 
           },
@@ -92,28 +111,19 @@ export default {
             groupId: 'waiting',
             className: ["fc-day-grid-event", "fc-h-event", "fc-event", "fc-start", "fc-end", "fc-draggable","show"],
             title: 'click to learn more',
-            start: '2019-09-20T13:00',
+            start: '2019-10-25T18:00',
             duration: '01:00',
             backgroundColor: '#F9AA0D',
+            firstName: 'Gor',
+            lastName: 'Gharagyozyan',
             message: 'verevi dzax atami plomb piti drvi'
-
           }
         ],
         config: {
-          lacale: 'ru',
+          lacale: 'am',
           selectable: false,
           droppable: false,
           editable:false,
-          customButtons: {
-            Add: {
-              text: "add event",
-              click: () => {
-                // this.addEvents();
-              }
-            }
-          },
-          minTime: '00:00:00',
-          maxTime: '23:59:59',
           defaultView: 'month',
           defaultDate: this.day,
           displayEventTime:true,
@@ -125,8 +135,10 @@ export default {
           },
           eventMouseover : (event,jsEvent) => {
             let topCoord,leftCoord;
+            let date = new Date(event.start._i);
+            this.cloudOptions.eventStartTime = 'Starts at` ' + (date.getHours() >= 10 ? date.getHours() : "0" + date.getHours()) + ':' + (date.getMinutes() >= 10 ? date.getMinutes() : "0" + date.getMinutes()) ; 
+            this.cloudOptions.eventOwnerName = event.firstName + " " + event.lastName;
             this.cloudOptions.eventCloudMessage = event.message;
-            this.cloudOptions.eventStartTime = event.start._i;
             topCoord = ((jsEvent.clientY + 200) > window.innerHeight) ? jsEvent.clientY - 200 : jsEvent.clientY;
             leftCoord = ((jsEvent.clientX + 350) > window.innerWidth) ? jsEvent.clientX - 350 : jsEvent.clientX; 
             document.documentElement.style.setProperty('--cloud-top',topCoord + 'px');
@@ -140,6 +152,13 @@ export default {
     };
   },
   watch:{
+    notificArr(newArr){
+      localStorage.notificArr = this.notificArr;
+      this.$emit('update_notifications',newArr);
+    },
+    mySize(){
+      document.getElementsByClassName('calendar_cont')[0].style.width = this.mySize + '%';
+    },
     config(){
       if(this.config.defaultView == 'month'){
         document.documentElement.style.setProperty('--calendar-view-height','100%');
@@ -149,8 +168,6 @@ export default {
       }
     },
     viewName(){
-      // console.log(this.viewName)
-      // this.config.defaultView = this.viewName;
       this.$refs.fullCalendar.fireMethod('changeView',this.viewName)
     },
     filterAcc(){
@@ -203,16 +220,45 @@ export default {
     }
   },
   mounted(){
-      // this.socket.on('initialEvents',(data) => {
-      //   this.events = [...this.events,data];
-      // });
-      this.$nextTick(() => {
-          window.addEventListener('resize',() => {
-            //   console.log(this)
-            //   this.winHeight = window.innerHeight - 15;
+    this.notifyMeBefore = localStorage.radio;
+    // if(localStorage.notificArr)
+      // this.notificArr = localStorage.notificArr;
+    // console.log(this.notificArr);
+    setInterval(() => {
+      let date = (new Date()).getTime();
+      this.events.forEach(el => {
+        if((new Date(el.start)).getTime() - date <= 60000 * this.notifyMeBefore && (new Date(el.start)).getTime() - date >= 0){
+          let counter = 0;
+          el.backgroundColor = 'yellow';
+          let date = new Date(el.start);
+          let string = `a${el.id} ${this.messageForUpcomingEvent} that starts at \` ${(date.getHours() >= 10 ? date.getHours() : "0" + date.getHours()) + ':' + (date.getMinutes() >= 10 ? date.getMinutes() : "0" + date.getMinutes())}`;
+          if( this.notificArr.indexOf(string) == -1 ){
+            this.notificArr.push(string);
+          }
+        } 
+        else if( (new Date(el.start)).getTime() - date < 0 ){
+          el.backgroundColor = 'gray';
+        } 
+        if(el.backgroundColor == 'gray'){
+          // console.log('mtav')
+          this.notificArr.forEach(ex => {
+            // console.log(ex);
+            // console.log(el.id);
+            if( ex.indexOf(el.id) == 1 ){
+              this.notificArr.splice(this.notificArr.indexOf(ex),1);
+            }
           })
-          
-      })
+        }
+        // if(el.backgroundColor == 'gray'){
+        //   this.notificArr.forEach(ex => {
+        //     if(el.id == ex.id){
+        //       this.notificArr.splice()
+        //     }
+        //   })
+        // }  
+      })            
+    },1000);
+
   } ,
   methods: {
     showCloud(){
@@ -245,13 +291,13 @@ export default {
         backgroundColor: "yellow"
       });
     },
-
   },
   components:{
     EventCloud
   }
 };
 </script>
+
 <style>
 :root{
   --calendar-view-height: '100 % / 6';
@@ -265,7 +311,6 @@ export default {
 .hide{
   display: none !important;
 }
-  
 .fc-time{
   display: none !important;
 }
@@ -287,10 +332,8 @@ export default {
 .fc-day:hover:not(.fc-today){
   background-color: transparent !important;
 }
-
 .calendar_cont{
-  width: 90% !important;
+  width: 97% !important;
   height: auto !important;
 }
-
 </style>

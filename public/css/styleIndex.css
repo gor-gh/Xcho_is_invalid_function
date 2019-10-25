@@ -63,7 +63,7 @@ body{
   
   @media (min-width: 768px) {
     #menu_container{
-        width: 15% ;
+        width: 5% ;
     }
     #calendar{
         margin-right: 0px;
@@ -72,12 +72,15 @@ body{
       width: 100% !important;
       display: inline-block;
     }
+    .but_cont{
+      height: 55px;
+    }
     .sidebar .nav-item .nav-link {
       display: block;
       width: 100%;
       text-align: left;
       padding: 1rem;
-      width: 225px;
+      /* width: 225px; */
     }
     .sidebar .nav-item .nav-link span {
       font-size: 1rem;
@@ -122,7 +125,7 @@ body{
 #calendar{
     display: inline-block;
     width: 97%;
-    height: 95% !important;
+    height: 98% !important;
     margin-right: 10px;
     margin-top: 20px;
     margin-left: 10px;
@@ -132,6 +135,9 @@ body{
 }
 #all_container{
     display:flex;
+}
+.fc-scroller{
+  overflow: hidden !important;
 }
 .menu_logo{
     width: 50px !important;
@@ -164,7 +170,7 @@ body{
     width: auto;
     height: auto;
     color: white;
-    line-height: 49px;
+    line-height: 55px;
     margin-left: 15px;
     padding-top: 5px;
 }

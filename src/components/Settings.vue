@@ -25,9 +25,9 @@
             <tr class="settings_menu">
                 <td>Notify Me Before:</td>
                 <td>
-                    <md-radio v-model="radio" value="quarter" name='quarter'>15 min</md-radio>
-                    <md-radio v-model="radio" value="half" name='half'>30 min</md-radio>
-                    <md-radio v-model="radio" value="hour" name='hour'>1 hour</md-radio>    
+                    <md-radio v-model="radio" value="15" name='quarter'>15 min</md-radio>
+                    <md-radio v-model="radio" value="30" name='half'>30 min</md-radio>
+                    <md-radio v-model="radio" value="60" name='hour'>1 hour</md-radio>    
                 </td>
             </tr>
             <tr>
@@ -37,7 +37,6 @@
                 </td>
             </tr>
         </tbody>
-        
     </table>
 </template>
 
@@ -46,15 +45,16 @@
 export default {
     data(){
         return{
-            radio:'quarter',
+            radio:'30',
             boolean: false,
             showAccepted:true,
             showDeclined:true,
             showWaiting:true
         }
     },
-    watch: {
-        boolean(){
+    mounted(){
+        if(localStorage.boolean){
+            this.boolean = (localStorage.boolean == 'true' ? true : false );
             if(this.boolean){
                 document.documentElement.style.setProperty('--basic-text-color','#C1B9BA');
                 document.documentElement.style.setProperty('--basic-background-color','#212121');
@@ -65,30 +65,63 @@ export default {
                 document.documentElement.style.setProperty('--basic-background-color','#ffffff');
                 document.documentElement.style.setProperty('--basic-check-col','#C1B9BA');
             }
+        }
+        if(localStorage.radio){
+            this.radio = localStorage.radio;
+        }
+        if(localStorage.showAccepted){
+            this.showAccepted = (localStorage.showAccepted == 'true' ? true : false );
+        }
+        if(localStorage.showWaiting){
+            this.showWaiting = (localStorage.showWaiting == 'true' ? true : false );
+        }
+        if(localStorage.showDeclined){
+            this.showDeclined = (localStorage.showDeclined == 'true' ? true : false );
+        }
+    },
+    watch: {
+        radio(newRadioVal){
+            localStorage.radio = newRadioVal;
         },
-        showAccepted(){
+        boolean(newBoolVal){
+            if(this.boolean){
+                document.documentElement.style.setProperty('--basic-text-color','#C1B9BA');
+                document.documentElement.style.setProperty('--basic-background-color','#212121');
+                document.documentElement.style.setProperty('--basic-check-col','#212121')
+            }
+            else{
+                document.documentElement.style.setProperty('--basic-text-color','#212529');
+                document.documentElement.style.setProperty('--basic-background-color','#ffffff');
+                document.documentElement.style.setProperty('--basic-check-col','#C1B9BA');
+            }
+            localStorage.boolean = newBoolVal;
+        },
+        showAccepted(newAcceptedVal){
             if(!this.showAccepted){
                 this.$emit('filterAccepted')
             }
             else{
                 this.$emit('showAccepted')
             }
+            localStorage.showAccepted = newAcceptedVal;
         },
-        showDeclined(){
+        showDeclined(newDeclinedVal){
             if(!this.showDeclined){
                 this.$emit('filterDeclined')
             }
             else{
                 this.$emit('showDeclined')
             }
+            localStorage.showDeclined = newDeclinedVal;
         },
-        showWaiting(){
+        showWaiting(newWaitingVal){
             if(!this.showWaiting){
                 this.$emit('filterWaiting')
             }
             else{
                 this.$emit('showWaiting')
             }
+            localStorage.showWaiting = newWaitingVal;
         }
     }
 }
@@ -105,20 +138,13 @@ export default {
         color: var(--basic-text-color) !important;
     }
     #all_cont{
-        /* background-color: blue; */
         color:var(--basic-text-color);
-        width:84%;
+        width:97%;
         height: 100vh; 
         margin: 0 auto;
         margin-top: 20px;
     }
-    #dark_mode{
-        /* border-bottom-style: solid;
-        border-width: 0.3px;
-        border-color: var(--basic-text-color); */
-    }
     .md-switch-thumb{
-        /* display:flex; */
         background-color: var(--basic-text-color) !important;
     }
     .md-switch-container{
@@ -126,16 +152,9 @@ export default {
     }
     .header{
         font-size: 40px !important;
-        /* width: 100% !important; */
-        /* border-bottom-style: solid;
-        border-width: 2px;
-        border-color: var(--basic-text-color); */
     }
     #filters{
         margin-top: 10px;
-        /* border-bottom-style: solid; */
-        /* border-width: 1px; */
-        /* border-color: var(--basic-text-color); */
         display: flex;
         justify-content: space-around;
     }
@@ -167,9 +186,6 @@ export default {
     .md-radio-container:after{
         background-color: var(--basic-check-col) !important;
     }
-    .md-checkbox-container> .md-ripple{
-        /* border-color: var(--basic-check-col); */
-    }
     .download_button{
         background-color: var(--basic-text-color) !important;
         color: var(--basic-check-col) !important;
@@ -178,5 +194,7 @@ export default {
     .md-button{
         width: 20% !important;
     }
-    
+    body{
+        color: var(--basic-text-color) !important;
+    }
 </style> 

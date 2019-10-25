@@ -1,78 +1,75 @@
 <template>
-  <div id="app">
-    <div id="all_container">
-        <div id="menu_container">
-                <ul class="sidebar navbar-nav">
-                        <li>
-                            <div class="d-flex but_cont" :class="menuOpened ? 'justify-content-between' : 'justify-content-center'">
-                                <span id="app_name" v-show="menuOpened"> {{appName}} </span>
-                                <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" @click="menuOpened = !menuOpened" href="#">
-                                    <font-awesome-icon icon="bars"></font-awesome-icon>
-                                </button>
-                            </div>
-                        </li>
-                        <li class="nav-item active" id="month" >
-                          <a class="nav-link" href="#" @click="makeMonthView">
-                            <font-awesome-icon icon="calendar-alt"></font-awesome-icon>
-                            <span v-show="menuOpened"> {{monthView}} </span>
-                          </a>
-                        </li>
-                        <li class="nav-item dropdown" id="week">
-                            <a class="nav-link" href="#" id="pagesDropdown" @click="makeWeekView">
-                                <font-awesome-icon icon="calendar-week"></font-awesome-icon>
-                                <span v-show="menuOpened"> {{weekView}} </span>
-                            </a>
-                        </li>
-                        <li class="nav-item" id="day">
-                            <a class="nav-link" href="#" @click="makeDayView">
-                                <font-awesome-icon icon="calendar-day"></font-awesome-icon>
-                                <span v-show="menuOpened"> {{dayView}} </span>
-                            </a>
-                        </li>
-                        <li class="nav-item" id="list">
-                            <md-menu md-size="medium" :md-offset-x="127" :md-offset-y="-36">
-                                <md-button md-menu-trigger class="list_button">
-                                    <a class="nav-link" href="#" >
-                                        <font-awesome-icon icon="list"></font-awesome-icon>                                
-                                        <span v-show="menuOpened"> {{list}} </span>
-                                    </a>
-                                </md-button>
-                                <md-menu-content>
-                                    <md-menu-item @click="makeListMonthView" class="text-center"> <span> {{listMonth}} </span> </md-menu-item>
-                                    <md-menu-item @click="makeListWeekView" class="text-center"> <span> {{listWeek}} </span> </md-menu-item>
-                                    <md-menu-item @click="makeListDayView" class="text-center"> <span> {{listDay}} </span> </md-menu-item>
-                                </md-menu-content>
-                            </md-menu>
-                        </li>
-                        <li class="nav-item" id="settings" @click="isCalendar = !isCalendar">
-                                <a class="nav-link" href="#">
-                                  <font-awesome-icon icon="cog"></font-awesome-icon>
-                                    <span v-show="menuOpened"> {{settings}} </span>
-                                </a>
-                            </li>
-                      </ul>
-        </div>
-        
-        <Calendar v-show="isCalendar" :filterAcc="filterAc" :filterDic="filterDe" :filterWait="filterWa" :viewName="view" />
-        <Settings v-show="!isCalendar" @filterAccepted="filterA()" @filterDeclined="filterD()" @filterWaiting="filterW()" @showAccepted="showA()" @showDeclined="showD()" 
-            @showWaiting="showW()"
+    <div id="app">
+        <LeftMenu   
+            @toggleSettings="toggleSet" 
+            @toggleSearch="toggleSearchPanel"
+            @toggleNotifications="toggleNotif"
+            @listMonthView="makeListMonthView" 
+            @listWeekView="makeListWeekView" 
+            @listDayView="makeListDayView" 
+            @dayView="makeDayView"
+            @weekView="makeWeekView" 
+            @monthView="makeMonthView" 
+            @toggleMenu="menuOpened = !menuOpened"
+            @openMenu="menuOpened = true"
+            @closeMenu="menuOpened = false"
+            @increase_cal="changeCalWidth(95)"
+            @reduce_cal="changeCalWidth(85)"
+            :listM="listMonth" 
+            :listW="listWeek" 
+            :listD="listDay" 
+            :list="list" 
+            :dayText="dayView" 
+            :weekText="weekView" 
+            :monthText="monthView" 
+            :appN="appName"      
+            :menuOp="menuOpened" 
+            :settings="settings"
+            :search="search"
+            :notific="notifText"
+            :notificArr="notif"
         />
-        
-        <!-- <div id="calendar"></div> -->
+        <Calendar 
+            v-show="whatToShow == 'calendar'" 
+            @update_notifications="updateNotif"
+            :filterAcc="filterAc" 
+            :filterDic="filterDe" 
+            :filterWait="filterWa" 
+            :viewName="view" 
+            :mySize="calWidth"
+        />
+        <Settings 
+            v-show="whatToShow == 'settings'" 
+            @filterAccepted="filterA" 
+            @filterDeclined="filterD" 
+            @filterWaiting="filterW" 
+            @showAccepted="showA" 
+            @showDeclined="showD" 
+            @showWaiting="showW"
+        />
+        <Notifications 
+            v-show="whatToShow == 'notifications'"
+            :notifications="notif"
+        />
+        <Search v-show="whatToShow == 'searchPanel'" />
     </div>
-  </div>
 </template>
 
 <script>
-// import HelloWorld from './components/HelloWorld.vue'
 import Calendar from './components/Calendar.vue';
 import Settings from './components/Settings.vue';
+import LeftMenu from './components/LeftMenu.vue';
+import Search from './components/Search.vue';
+import Notifications from './components/Notifications.vue';
 
 export default {
     data: function(){
         return {
+            calWidth: 85,
             appName:'App-Name',
             settings: 'Settings',
+            search:'Search',
+            notifText: 'Notifications',
             list: 'List',
             listMonth: 'List Month',
             listWeek : 'List Week',
@@ -81,37 +78,53 @@ export default {
             weekView: 'Week',
             dayView: 'Day',
             view: 'month',
-            menuOpened: true,
-            isCalendar : true,
+            menuOpened: false,
+            whatToShow:'calendar',
             filterAc:false,
             filterDe:false,
-            filterWa:false
+            filterWa:false,
+            notif:[]    
         }
     },
     methods: {
+        updateNotif(arr){
+            this.notif = [...arr];
+        },
+        changeCalWidth(width){
+            this.calWidth = width;
+        },
+        toggleSearchPanel(){
+            this.whatToShow = 'searchPanel';
+        },
+        toggleSet(){
+            this.whatToShow = 'settings';
+        },
+        toggleNotif(){
+            this.whatToShow = 'notifications';
+        },
         makeMonthView(){
             this.view = 'month';
-            this.isCalendar = true;
+            this.whatToShow = 'calendar';
         },
         makeDayView(){
             this.view = 'basicDay';
-            this.isCalendar = true;
+            this.whatToShow = 'calendar';
         },
         makeWeekView(){
             this.view = 'basicWeek';
-            this.isCalendar = true;
+            this.whatToShow = 'calendar';
         },
         makeListMonthView(){
             this.view = 'listMonth';
-            this.isCalendar = true;
+            this.whatToShow = 'calendar';
         },
         makeListWeekView(){
             this.view = 'listWeek';
-            this.isCalendar = true;
+            this.whatToShow = 'calendar';        
         },
         makeListDayView(){
             this.view = 'listDay';
-            this.isCalendar = true;
+            this.whatToShow = 'calendar';
         },
         filterA(){
             this.filterAc = !this.filterAc;
@@ -132,48 +145,23 @@ export default {
             this.filterWa = ! this.filterWa;
         }
     },
-  name: 'app',
-  components: {
-      Calendar,
-      Settings
-    // HelloWorld
-  }
+    name: 'app',
+    components: {
+        Calendar,
+        Settings,
+        LeftMenu,
+        Search,
+        Notifications
+    }
 }
 </script>
-
 <style >
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  /* margin-top: 60px; */
-}
-.md-menu{
-    width: 100% !important;
-}
-.list_button{
-    width: 100% !important;
-}
-.md-ripple{
-    padding: 0px !important;
-    justify-content: none !important;
-}
-.md-button-content{
-    width: 100%;
-}
-.md-button-content>.nav-link{
-    width: 100%;
-}
-.md-list-item-content{
-    text-align: center !important;
-    display: flex;
-    justify-content: center !important;
-}
-@media only screen and (max-width: 1201px) {
-    .fc-event-container  .fc-title{
-        font-size: 15px !important;
-    }       
+#app{
+    display:flex;
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
 }
 </style>

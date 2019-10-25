@@ -1,0 +1,229 @@
+<template>
+    <div id="menu_container" @mouseover="openMenu" @mouseout="closeMenu">
+        <ul class="sidebar navbar-nav">
+            <li>
+                <div class="d-flex but_cont" :class="menuOp ? 'justify-content-between' : 'justify-content-center'">
+                    <span id="app_name" v-show="menuOp"> {{appN}} </span>
+                        <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
+                            <font-awesome-icon icon="angry"></font-awesome-icon>
+                        </button>
+                </div>
+            </li>
+            <li class="nav-item active" id="month" >
+                <a class="nav-link" href="#" @click="monthView">
+                    <font-awesome-icon icon="calendar-alt"></font-awesome-icon>
+                    <span v-show="menuOp"> {{monthText}} </span>
+                </a>
+            </li>
+            <li class="nav-item dropdown" id="week">
+                <a class="nav-link" href="#" id="pagesDropdown" @click="weekView">
+                    <font-awesome-icon icon="calendar-week"></font-awesome-icon>
+                    <span v-show="menuOp"> {{weekText}} </span>
+                </a>
+            </li>
+            <li class="nav-item" id="day">
+                <a class="nav-link" href="#" @click="dayView">
+                    <font-awesome-icon icon="calendar-day"></font-awesome-icon>
+                    <span v-show="menuOp"> {{dayText}} </span>
+                </a>
+            </li>
+            <li class="nav-item" id="list">
+                <md-menu md-size="medium" :md-offset-x="127" :md-offset-y="-36" >
+                    <md-button md-menu-trigger class="list_button">
+                        <a class="nav-link" href="#" >
+                            <font-awesome-icon icon="list"></font-awesome-icon>                                
+                            <span v-show="menuOp"> {{list}} </span>
+                        </a>
+                    </md-button>
+                    <md-menu-content  >
+                        <md-menu-item @mouseover="openMenu" @mouseout="closeMenu" @click="listMonthView" class="text-center"> <span> {{listM}} </span> </md-menu-item>
+                        <md-menu-item @mouseover="openMenu" @mouseout="closeMenu" @click="listWeekView" class="text-center"> <span> {{listW}} </span> </md-menu-item>
+                        <md-menu-item @mouseover="openMenu" @mouseout="closeMenu" @click="listDayView" class="text-center"> <span> {{listD}} </span> </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+            </li>
+            <li class="nav-item" id="searchPanel" @click="toggleSearchPanel">
+                <a class="nav-link" href="#">
+                    <font-awesome-icon icon="search"></font-awesome-icon>
+                    <span v-show="menuOp"> {{search}} </span>
+                </a>
+            </li>
+            <li class="nav-item" id="notifications" @click="toggleNotifications">
+                <a class="nav-link notif_link" href="#" >
+                    <font-awesome-icon icon="envelope"></font-awesome-icon>
+                    <span v-show="menuOp"> {{notific}} </span>
+                    <div v-show="(!menuOp && notificArr.length > 0)" class="menu_closed_badge"> {{ (notificArr.length > 0 ) ? notificArr.length : ''}} </div>
+                    <div v-show="(menuOp && notificArr.length > 0)" class="menu_opened_badge"> {{ (notificArr.length > 0 ) ? notificArr.length : ''}} </div>
+                </a>
+            </li>
+            <li class="nav-item" id="settings" @click="toggleSettings">
+                <a class="nav-link" href="#">
+                    <font-awesome-icon icon="cog"></font-awesome-icon>
+                    <span v-show="menuOp"> {{settings}} </span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</template>
+
+<script>
+export default {
+    props:{
+        menuOp: Boolean,
+        settings:String,
+        search:String,
+        notific:String,
+        notificArr:Array,
+        listM:String,
+        listW:String,
+        listD:String,
+        list:String,
+        dayText:String,
+        weekText:String,
+        monthText:String,
+        appN:String
+    },
+    methods:{
+        toggleSearchPanel(){
+            this.$emit('toggleSearch');
+        },
+        toggleSettings(){
+            this.$emit('toggleSettings');
+        },
+        toggleNotifications(){
+            this.$emit('toggleNotifications');
+        },
+        dayView(){
+            this.$emit('dayView');
+        },
+        weekView(){
+            this.$emit('weekView');
+        },
+        monthView(){
+            this.$emit('monthView');
+        },
+        listMonthView(){
+            this.$emit('listMonthView');
+            this.closeMenu();
+        },
+        listWeekView(){
+            this.$emit('listWeekView');
+            this.closeMenu();
+        },
+        listDayView(){
+            this.$emit('listDayView');
+            this.closeMenu();
+        },
+        toggleMenu(){
+            this.$emit('toggleMenu');
+        },
+        openMenu(){
+            this.$emit('openMenu');
+        },
+        closeMenu(){
+            this.$emit('closeMenu');
+        },
+        funkcia(){
+            console.log('work');
+        }
+    },
+    watch : {
+        menuOp(){
+            let links = document.querySelectorAll('.sidebar>.nav-item .nav-link');
+            if(this.menuOp){
+                document.getElementById('menu_container').style.width = '20%'; 
+                this.$emit('reduce_cal');
+                links.forEach(el => {
+                    el.style.textAlign = 'left';
+                })
+            }
+            else{
+                document.getElementById('menu_container').style.width = '5%';
+                this.$emit('increase_cal');
+                links.forEach(el => {
+                    el.style.textAlign = 'center';
+                })
+            }
+        }
+    },
+    mounted(){
+        // this.notificArr = [];
+        // this.notificArr.push('5');
+        // console.log(this.notificArr)
+    }
+}
+</script>
+
+<style>
+#sidebarToggle{
+    height: 100%;
+}
+.md-menu{
+    width: 100% !important;
+}
+.list_button{
+    width: 100% !important;
+    min-width: 20px !important;
+}
+.md-ripple{
+    padding: 0px !important;
+    justify-content: none !important;
+}
+.md-button-content{
+    width: 100%;
+}
+.md-button-content>.nav-link{
+    width: 100%;
+}
+.md-list-item-content{
+    text-align: center !important;
+    display: flex;
+    justify-content: center !important;
+}
+.nav-item > .md-menu{
+    height: 60.7px;
+    padding-top: 13px;
+    padding-bottom: 13px;
+}
+.md-button:not([disabled]).md-focused:before, .md-button:not([disabled]):active:before, .md-button:not([disabled]):hover:before{
+    background-color: transparent;
+}
+.sidebar>.nav-item>.nav-link{
+    text-align: none;
+}
+.notif_link{
+    position: relative;
+}
+.menu_closed_badge{
+    position: absolute;
+    top: 12px;
+    left: 40px;
+    width: 15px;
+    height: 15px;
+    border-radius: 100%;
+    background-color: red;
+    font-size: 12px !important;
+    line-height: 15px;
+    color: white;
+    text-align: center;
+}
+.menu_opened_badge{
+    position: absolute;
+    top: 22px;
+    left: 90%;
+    width: 15px;
+    height: 15px;
+    border-radius: 4px;
+    background-color: red;
+    font-size: 12px !important;
+    line-height: 15px;
+    color: white;
+    text-align: center;
+}
+
+@media only screen and (max-width: 1201px) {
+    .fc-event-container  .fc-title{
+        font-size: 15px !important;
+    }       
+}
+</style>
