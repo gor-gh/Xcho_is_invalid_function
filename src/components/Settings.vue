@@ -19,6 +19,7 @@
                         <md-checkbox v-model="showAccepted" checked >Accepted</md-checkbox>
                         <md-checkbox v-model="showDeclined" checked >Declined</md-checkbox>
                         <md-checkbox v-model="showWaiting" checked >Waiting</md-checkbox>
+                        <md-checkbox v-model="showPast" checked >Past</md-checkbox>
                     </span>
                 </td>
             </tr>
@@ -49,7 +50,8 @@ export default {
             boolean: false,
             showAccepted:true,
             showDeclined:true,
-            showWaiting:true
+            showWaiting:true,
+            showPast:true
         }
     },
     mounted(){
@@ -78,6 +80,11 @@ export default {
         if(localStorage.showDeclined){
             this.showDeclined = (localStorage.showDeclined == 'true' ? true : false );
         }
+        if(localStorage.showPast){
+            this.showPast = ( localStorage.showPast == 'true' ? true : false );
+            console.log(this.showPast);
+            
+        }
     },
     watch: {
         radio(newRadioVal){
@@ -99,11 +106,20 @@ export default {
         showAccepted(newAcceptedVal){
             if(!this.showAccepted){
                 this.$emit('filterAccepted')
-            }
-            else{
+            }else{
                 this.$emit('showAccepted')
             }
             localStorage.showAccepted = newAcceptedVal;
+        },
+        showPast(){
+            
+            if(!this.showPast){
+                console.log('arec')
+                this.$emit('filterPast')
+            }else{
+                this.$emit('showPast')
+            }
+            localStorage.showPast = this.showPast;
         },
         showDeclined(newDeclinedVal){
             if(!this.showDeclined){

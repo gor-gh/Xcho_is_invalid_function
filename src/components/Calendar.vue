@@ -1,13 +1,15 @@
 <template>    
   <div class="calendar_cont"> 
     <full-calendar ref="fullCalendar" :config="config" :events="events" />
-    <EventCloud 
-      v-show="flagForCloudVisibility" 
-      @ShowCloud="showCloud"
-      @HideCloud="hideCloud"
-      :flagVis="flagForCloudVisibility" 
-      :cloudOp="cloudOptions"
-    /> 
+    <transition name="bounce">
+      <EventCloud 
+        v-show="flagForCloudVisibility" 
+        @ShowCloud="showCloud"
+        @HideCloud="hideCloud"
+        :flagVis="flagForCloudVisibility" 
+        :cloudOp="cloudOptions"
+      /> 
+    </transition>
   </div>
 </template>
 
@@ -18,18 +20,36 @@ import EventCloud from './EventCloud.vue';
 export default {
   name: "hello",
   props: {
+    apprEvId:Number,
+    decEvId:Number,
     mySize:Number,
     calendarHeight:String,
     viewName: String,
     filterAcc:Boolean,
     filterDic:Boolean,
-    filterWait:Boolean
+    filterWait:Boolean,
+    filterPast:Boolean
   },
   data() {
     return {
-    day: new Date(),      
+    day: new Date(),
+    months:[
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ],      
     // calendarPlugins:[dayGridPlugin,timeGridPlugin,listPlugin],
     flagForCloudVisibility: false,
+    isCloudOver:false,
     notifyMeBefore:'',
     cloudOptions: {
       eventCloudMessage: '',
@@ -49,8 +69,7 @@ export default {
             id: 0,
             groupId: 'waiting',
             className: ["fc-day-grid-event", "fc-h-event", "fc-event", "fc-start", "fc-end", "fc-draggable","show"],
-            title: 'click to learn more',
-            start: '2019-10-28T13:00',
+            start: '2019-11-04T13:00',
             duration: '01:00',
             backgroundColor: '#F9AA0D',
             firstName: 'Vahagn',
@@ -61,8 +80,7 @@ export default {
             id:1,
             groupId: 'accepted',
             className: ["fc-day-grid-event", "fc-h-event", "fc-event", "fc-start", "fc-end", "fc-draggable","show"],
-            title: 'click to learn more',
-            start: '2019-10-27T15:00',
+            start: '2019-11-05T15:00',
             duration: '02:00',
             backgroundColor: '#25F90D',
             firstName: 'Gor',
@@ -71,24 +89,22 @@ export default {
           },
           {
             id: 2,
-            groupId: 'declined',
+            groupId: 'accepted',
             className: ["fc-day-grid-event", "fc-h-event", "fc-event", "fc-start", "fc-end", "fc-draggable","show"],
-            title: 'click to repair',
-            start: '2019-10-29T17:00',
+            start: '2019-11-09T15:30',
             duration: '01:30',
-            backgroundColor: '#D40B1F',
+            backgroundColor: '#25F90D',
             firstName: 'Karen',
             lastName: 'Makaryan',
             message: 'verevi dzax atami plomb piti drvi'
           },
           {
             id:3,
-            groupId: 'accepted',
+            groupId: 'declined',
             className: ["fc-day-grid-event", "fc-h-event", "fc-event", "fc-start", "fc-end", "fc-draggable","show"],
-            title: 'click to learn more',
-            start: '2019-10-25T03:01',
+            start: '2019-11-03T03:01',
             duration: '02:00',
-            backgroundColor: '#25F90D',
+            backgroundColor: '#D40B1F',
             firstName: 'Khachatur',
             lastName: 'Ghukasyan',
             message: 'verevi dzax atami plomb piti drvi'
@@ -97,8 +113,7 @@ export default {
             id: 4,
             groupId: 'declined',
             className: ["fc-day-grid-event", "fc-h-event", "fc-event", "fc-start", "fc-end", "fc-draggable","show"],
-            title: 'click to repair',
-            start: '2019-10-24T18:55',
+            start: '2019-11-04T18:55',
             duration: '01:30',
             backgroundColor: '#D40B1F',
             firstName: 'Vardan',
@@ -110,16 +125,19 @@ export default {
             id: 5,
             groupId: 'waiting',
             className: ["fc-day-grid-event", "fc-h-event", "fc-event", "fc-start", "fc-end", "fc-draggable","show"],
-            title: 'click to learn more',
-            start: '2019-10-25T18:00',
+            start: '2019-11-07T16:30',
             duration: '01:00',
             backgroundColor: '#F9AA0D',
             firstName: 'Gor',
             lastName: 'Gharagyozyan',
             message: 'verevi dzax atami plomb piti drvi'
           }
+
         ],
         config: {
+          dayClick: function(date,jsEvent,view){
+            alert('clicked on' + date.getDate());
+          },
           lacale: 'am',
           selectable: false,
           droppable: false,
@@ -146,12 +164,46 @@ export default {
             this.flagForCloudVisibility = true;
           },
           eventMouseout: () => {
-            this.flagForCloudVisibility = false;
+            setTimeout(() => {
+              if( !this.isCloudOver )
+                this.flagForCloudVisibility = false;
+            }, 2);
           }
         }
     };
   },
   watch:{
+    apprEvId(){
+      // console.log(this.apprEvId);
+      this.events.forEach(el => {
+        if( el.id == this.apprEvId ){
+          console.log('alb')
+          el.groupId = 'accepted';
+          el.backgroundColor = '#25F90D';
+          this.notificArr.forEach(ex => {
+            if( ex.indexOf(this.apprEvId) == 1 ){
+              console.log('mi ban')
+              this.notificArr.splice(this.notificArr.indexOf(ex),1);
+            } 
+          })
+        }
+      })
+    },
+    decEvId(){
+      this.events.forEach(el => {
+        if( el.id == this.decEvId ){
+          console.log('alb')
+          el.groupId = 'declined';
+          el.backgroundColor = '#D40B1F';
+          this.notificArr.forEach(ex => {
+            if( ex.indexOf(this.decEvId) == 1 ){
+              // console.log('mi ban')
+              this.notificArr.splice(this.notificArr.indexOf(ex),1);
+            } 
+          })
+        }
+      })
+    },
     notificArr(newArr){
       localStorage.notificArr = this.notificArr;
       this.$emit('update_notifications',newArr);
@@ -203,6 +255,7 @@ export default {
       }
     },
     filterWait(){
+      console.log(this.filterWait)
       if(this.filterWait){
         this.events.forEach(el => {
           if(el.groupId == 'waiting'){
@@ -217,6 +270,22 @@ export default {
           }
         });
       }
+    },
+    filterPast(){
+      if(this.filterPast){
+        this.events.forEach(el => {
+          if(el.groupId == 'past'){
+            el.className.splice(el.className.indexOf('show'),1,'hide');
+          }
+        });
+      }
+      else{
+        this.events.forEach(el => {
+          if(el.groupId == 'past'){
+            el.className.splice(el.className.indexOf('hide'),1,'show');
+          }
+        })
+      }
     }
   },
   mounted(){
@@ -227,48 +296,64 @@ export default {
     setInterval(() => {
       let date = (new Date()).getTime();
       this.events.forEach(el => {
-        if((new Date(el.start)).getTime() - date <= 60000 * this.notifyMeBefore && (new Date(el.start)).getTime() - date >= 0){
+        if((new Date(el.start)).getTime() - date <= 60000 * this.notifyMeBefore && (new Date(el.start)).getTime() - date >= 0 && el.groupId == "accepted"){
           let counter = 0;
           el.backgroundColor = 'yellow';
           let date = new Date(el.start);
           let string = `a${el.id} ${this.messageForUpcomingEvent} that starts at \` ${(date.getHours() >= 10 ? date.getHours() : "0" + date.getHours()) + ':' + (date.getMinutes() >= 10 ? date.getMinutes() : "0" + date.getMinutes())}`;
           if( this.notificArr.indexOf(string) == -1 ){
+            console.log('mtav');
             this.notificArr.push(string);
           }
         } 
         else if( (new Date(el.start)).getTime() - date < 0 ){
           el.backgroundColor = 'gray';
+          el.groupId = 'past';
+          if(this.filterPast){
+            this.events.forEach(el => {
+              if(el.groupId == 'past'){
+                el.className.splice(el.className.indexOf('show'),1,'hide');
+              }
+            });
+          }
+          else{
+            this.events.forEach(el => {
+              if(el.groupId == 'past'){
+                el.className.splice(el.className.indexOf('hide'),1,'show');
+              }
+            })
+          }
         } 
         if(el.backgroundColor == 'gray'){
-          // console.log('mtav')
           this.notificArr.forEach(ex => {
-            // console.log(ex);
-            // console.log(el.id);
             if( ex.indexOf(el.id) == 1 ){
               this.notificArr.splice(this.notificArr.indexOf(ex),1);
             }
           })
         }
-        // if(el.backgroundColor == 'gray'){
-        //   this.notificArr.forEach(ex => {
-        //     if(el.id == ex.id){
-        //       this.notificArr.splice()
-        //     }
-        //   })
-        // }  
       })            
     },1000);
+    this.events.forEach(el => {
+      if(el.groupId == 'waiting'){
+        let date = new Date(el.start);
+        let string = `b${el.id} ${el.firstName + ' ' + el.lastName} wants to register a meeting at \` ${date.getDate()} ${this.months[date.getMonth()]}, 
+                      ${(date.getHours() >= 10 ? date.getHours() : "0" + date.getHours()) + ':' + (date.getMinutes() >= 10 ? date.getMinutes() : "0" + date.getMinutes())} `;
+        this.notificArr.push(string)
+      }
+    })
 
   } ,
   methods: {
     showCloud(){
-      this.flagForCloudVisibility = true;
+      if(!this.flagForCloudVisibility){
+        this.flagForCloudVisibility = true;
+      }
+      this.isCloudOver = true;
     },
     hideCloud(){
-      this.flagForCloudVisibility = false;
-    },
-    nextnext(){
-      this.$refs.fullCalendar.getApi().next();
+      if(this.flagForCloudVisibility)
+        this.flagForCloudVisibility = false;
+      this.isCloudOver = false;
     },
     setMonthView(){
       this.config.defaultView = 'month';
@@ -311,6 +396,15 @@ export default {
 .hide{
   display: none !important;
 }
+.fc-event{
+  /* width: 10px !important;
+  height: 10px !important;
+  border-radius: 100% !important; */
+  /* margin-top: -10px !important; */
+}
+.fc-event-container{
+  /* display:inline-flex; */
+}
 .fc-time{
   display: none !important;
 }
@@ -319,6 +413,7 @@ export default {
 }
 .fc-month-view > .fc-row{
   height: calc(100% / 6) !important;
+  max-height: calc(100% / 6) !important;
 }
 .fc-basicWeek-view .fc-row{
   height: 100%;
@@ -335,5 +430,39 @@ export default {
 .calendar_cont{
   width: 97% !important;
   height: auto !important;
+}
+.fc-left .fc-next-button,.fc-left .fc-prev-button{
+  background-color: var(--basic-text-color) !important;
+  border-color: var(--basic-check-col) !important; 
+  color: var(--basic-check-col) !important;
+  background-image: none !important;
+}
+.fc-right .fc-today-button{
+  background-color: var(--basic-text-color) !important;
+  color: var(--basic-check-col) !important;
+  background-image: none !important;
+  border-color: var(--basic-check-col) !important;
+}
+/*animation */
+
+
+
+.bounce-enter-active {
+  animation: bounce-in .5s;
+}
+.bounce-leave-active {
+  animation: bounce-in .5s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0) translateX(-350px) translateY(200px);
+    /* opacity:0; */
+  }
+  100% {
+  
+    transform: scale(1) translateX(0px) translateY(0px) ;
+    /* opacity: 1; */
+    /* asdas */
+  }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <div id="menu_container" @mouseover="openMenu" @mouseout="closeMenu">
+    <div id="menu_container" @mouseover="openMenu" @mouseout="closeMenu" :style="{width : menuOp ? '20%' : '5%'}">
         <ul class="sidebar navbar-nav">
             <li>
                 <div class="d-flex but_cont" :class="menuOp ? 'justify-content-between' : 'justify-content-center'">
@@ -28,19 +28,15 @@
                 </a>
             </li>
             <li class="nav-item" id="list">
-                <md-menu md-size="medium" :md-offset-x="127" :md-offset-y="-36" >
-                    <md-button md-menu-trigger class="list_button">
-                        <a class="nav-link" href="#" >
-                            <font-awesome-icon icon="list"></font-awesome-icon>                                
-                            <span v-show="menuOp"> {{list}} </span>
-                        </a>
-                    </md-button>
-                    <md-menu-content  >
-                        <md-menu-item @mouseover="openMenu" @mouseout="closeMenu" @click="listMonthView" class="text-center"> <span> {{listM}} </span> </md-menu-item>
-                        <md-menu-item @mouseover="openMenu" @mouseout="closeMenu" @click="listWeekView" class="text-center"> <span> {{listW}} </span> </md-menu-item>
-                        <md-menu-item @mouseover="openMenu" @mouseout="closeMenu" @click="listDayView" class="text-center"> <span> {{listD}} </span> </md-menu-item>
-                    </md-menu-content>
-                </md-menu>
+                <a class="nav-link" href="#" @click="showNesMen">
+                    <font-awesome-icon icon="list"></font-awesome-icon>                                
+                    <span v-show="menuOp"> {{list}} </span>
+                </a>
+                <ul v-show="showNestedMenu && menuOp" class="nested_menu" :class="(showNestedMenu) ? 'anim_in' : 'anim_out'">
+                    <li @click="listMonthView"><span> {{listM}} </span></li>
+                    <li @click="listWeekView"><span> {{listW}} </span></li>
+                    <li @click="listDayView"><span> {{listD}} </span></li>
+                </ul>                  
             </li>
             <li class="nav-item" id="searchPanel" @click="toggleSearchPanel">
                 <a class="nav-link" href="#">
@@ -83,7 +79,15 @@ export default {
         monthText:String,
         appN:String
     },
+    data(){
+        return {
+            showNestedMenu:false
+        }
+    },
     methods:{
+        showNesMen(){
+            this.showNestedMenu = !this.showNestedMenu;
+        },
         toggleSearchPanel(){
             this.$emit('toggleSearch');
         },
@@ -129,16 +133,20 @@ export default {
     },
     watch : {
         menuOp(){
+            console.log(this.menuOp);
             let links = document.querySelectorAll('.sidebar>.nav-item .nav-link');
             if(this.menuOp){
-                document.getElementById('menu_container').style.width = '20%'; 
+                document.getElementById('menu_container').style.animationName = 'openMenu';
+                document.getElementById('menu_container').style.animationDirection = 'reverse';
+                document.getElementById('menu_container').style.animationDuration = '1s';
                 this.$emit('reduce_cal');
                 links.forEach(el => {
                     el.style.textAlign = 'left';
                 })
             }
             else{
-                document.getElementById('menu_container').style.width = '5%';
+                document.getElementById('menu_container').style.animationName = 'openMenu';
+                document.getElementById('menu_container').style.animationDuration = '1s';
                 this.$emit('increase_cal');
                 links.forEach(el => {
                     el.style.textAlign = 'center';
@@ -157,6 +165,20 @@ export default {
 <style>
 #sidebarToggle{
     height: 100%;
+}
+.nested_menu{
+    list-style-type: none;
+}
+.nested_menu > li{
+    height: 30px;
+    line-height: 20px;
+    text-align: start;
+    padding-left:30px;
+    cursor: pointer; 
+    color: var(--basic-check-col);
+}
+.nested_menu > li:hover{
+    text-decoration: underline;
 }
 .md-menu{
     width: 100% !important;
@@ -221,6 +243,52 @@ export default {
     text-align: center;
 }
 
+
+/*animation */
+
+.anim_in{
+    animation: nested 0.5s;
+}
+.anim_out{
+    animation: nested 0.5s reverse;
+}
+@keyframes nested{
+    0%{
+        height: 0px;
+    }
+    100%{
+        height: 90px;
+    }
+}
+
+@keyframes openMenu{
+    0%{
+        width: 5%;
+    }
+    50%{
+        width: 22%;
+    }
+    100%{
+        width: 20%;
+    }
+}
+
+
+.bounce-enter-active {
+  animation: bounce-in .5s;
+}
+.bounce-leave-active {
+  animation: bounce-in .5s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    height: 0px;
+  }
+ 
+  100% {
+      height: 90px;
+  }
+}
 @media only screen and (max-width: 1201px) {
     .fc-event-container  .fc-title{
         font-size: 15px !important;

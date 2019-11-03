@@ -10,7 +10,6 @@
             @dayView="makeDayView"
             @weekView="makeWeekView" 
             @monthView="makeMonthView" 
-            @toggleMenu="menuOpened = !menuOpened"
             @openMenu="menuOpened = true"
             @closeMenu="menuOpened = false"
             @increase_cal="changeCalWidth(95)"
@@ -35,20 +34,27 @@
             :filterAcc="filterAc" 
             :filterDic="filterDe" 
             :filterWait="filterWa" 
+            :filterPast="filterPa"
             :viewName="view" 
             :mySize="calWidth"
+            :apprEvId="localEventIdAppr"
+            :decEvId="localEventIdDec"
         />
         <Settings 
             v-show="whatToShow == 'settings'" 
             @filterAccepted="filterA" 
             @filterDeclined="filterD" 
             @filterWaiting="filterW" 
+            @filterPast="filterP"
             @showAccepted="showA" 
             @showDeclined="showD" 
             @showWaiting="showW"
+            @showPast="showP"
         />
         <Notifications 
             v-show="whatToShow == 'notifications'"
+            @approveEvent="approve"
+            @declineEvent="decline"
             :notifications="notif"
         />
         <Search v-show="whatToShow == 'searchPanel'" />
@@ -65,6 +71,8 @@ import Notifications from './components/Notifications.vue';
 export default {
     data: function(){
         return {
+            localEventIdAppr: NaN,
+            localEventIdDec:NaN,
             calWidth: 85,
             appName:'App-Name',
             settings: 'Settings',
@@ -83,10 +91,19 @@ export default {
             filterAc:false,
             filterDe:false,
             filterWa:false,
+            filterPa:false,
             notif:[]    
         }
     },
     methods: {
+        approve(eventId){
+            this.localEventIdAppr = parseInt(eventId);
+        },
+        decline(eventId){
+            this.localEventIdDec = parseInt(eventId);
+            console.log('arecblabla');
+
+        },
         updateNotif(arr){
             this.notif = [...arr];
         },
@@ -135,6 +152,10 @@ export default {
         filterW(){
             this.filterWa = !this.filterWa;
         },
+        filterP(){
+            this.filterPa = !this.filterPa;
+            console.log(this.filterPa);
+        },
         showA(){
             this.filterAc = !this.filterAc;
         },
@@ -142,7 +163,10 @@ export default {
             this.filterDe = !this.filterDe;
         },
         showW(){
-            this.filterWa = ! this.filterWa;
+            this.filterWa = !this.filterWa;
+        },
+        showP(){
+            this.filterPa = !this.filterPa;
         }
     },
     name: 'app',
