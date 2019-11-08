@@ -10,11 +10,18 @@
         :cloudOp="cloudOptions"
       /> 
     </transition>
+    <div v-show="showModal">
+      <Modal
+        @closeModal="closeModalWindow"
+        :filArr="filteredEvents"
+      />
+    </div>  
   </div>
 </template>
 
 <script>
 import EventCloud from './EventCloud.vue';
+import Modal from './Modal';
 // import axios from 'axios';
 
 export default {
@@ -46,10 +53,12 @@ export default {
       'October',
       'November',
       'December'
-    ],      
+    ],  
+    filteredEvents: [],    
     // calendarPlugins:[dayGridPlugin,timeGridPlugin,listPlugin],
     flagForCloudVisibility: false,
-    isCloudOver:false,
+    showModal: false,
+    isCloudOver: false,
     notifyMeBefore:'',
     cloudOptions: {
       eventCloudMessage: '',
@@ -74,7 +83,8 @@ export default {
             backgroundColor: '#F9AA0D',
             firstName: 'Vahagn',
             lastName: 'Melkonyan',
-            message: 'verevi dzax atami plomb piti drvi'
+            message: 'verevi dzax atami plomb piti drvi',
+            phone : '055599565'
           },
           {
             id:1,
@@ -85,7 +95,8 @@ export default {
             backgroundColor: '#25F90D',
             firstName: 'Gor',
             lastName: 'Gharagyozyan',
-            message: 'verevi dzax atami plomb piti drvi'
+            message: 'verevi dzax atami plomb piti drvi',
+            phone : '055599565'
           },
           {
             id: 2,
@@ -96,7 +107,8 @@ export default {
             backgroundColor: '#25F90D',
             firstName: 'Karen',
             lastName: 'Makaryan',
-            message: 'verevi dzax atami plomb piti drvi'
+            message: 'verevi dzax atami plomb piti drvi',
+            phone : '055599565'
           },
           {
             id:3,
@@ -107,7 +119,8 @@ export default {
             backgroundColor: '#D40B1F',
             firstName: 'Khachatur',
             lastName: 'Ghukasyan',
-            message: 'verevi dzax atami plomb piti drvi'
+            message: 'verevi dzax atami plomb piti drvi',
+            phone : '055599565'
           },
           {
             id: 4,
@@ -118,37 +131,91 @@ export default {
             backgroundColor: '#D40B1F',
             firstName: 'Vardan',
             lastName: 'Sahakyan',
-            message: 'verevi dzax atami plomb piti drvi'
-
+            message: 'verevi dzax atami plomb piti drvi',
+            phone : '055599565'
           },
           {
             id: 5,
             groupId: 'waiting',
             className: ["fc-day-grid-event", "fc-h-event", "fc-event", "fc-start", "fc-end", "fc-draggable","show"],
-            start: '2019-11-07T16:30',
+            start: '2019-11-07T17:15',
             duration: '01:00',
             backgroundColor: '#F9AA0D',
             firstName: 'Gor',
             lastName: 'Gharagyozyan',
-            message: 'verevi dzax atami plomb piti drvi'
-          }
-
+            message: 'verevi dzax atami plomb piti drvi',
+            phone : '055599565'
+          },
+          {
+            id: 6,
+            groupId: 'waiting',
+            className: ["fc-day-grid-event", "fc-h-event", "fc-event", "fc-start", "fc-end", "fc-draggable","show"],
+            start: '2019-11-07T17:15',
+            duration: '01:00',
+            backgroundColor: '#F9AA0D',
+            firstName: 'Gor',
+            lastName: 'Gharagyozyan',
+            message: 'verevi dzax atami plomb piti drvi',
+            phone : '055599565'
+          },
+          {
+            id: 7,
+            groupId: 'waiting',
+            className: ["fc-day-grid-event", "fc-h-event", "fc-event", "fc-start", "fc-end", "fc-draggable","show"],
+            start: '2019-11-07T17:15',
+            duration: '01:00',
+            backgroundColor: '#F9AA0D',
+            firstName: 'Gor',
+            lastName: 'Gharagyozyan',
+            message: 'verevi dzax atami plomb piti drvi',
+            phone : '055599565'
+          },
+          {
+            id: 8,
+            groupId: 'waiting',
+            className: ["fc-day-grid-event", "fc-h-event", "fc-event", "fc-start", "fc-end", "fc-draggable","show"],
+            start: '2019-11-07T17:15',
+            duration: '01:00',
+            backgroundColor: '#F9AA0D',
+            firstName: 'Gor',
+            lastName: 'Gharagyozyan',
+            message: 'verevi dzax atami plomb piti drvi',
+            phone : '055599565'
+          },
+          {
+            id: 9,
+            groupId: 'waiting',
+            className: ["fc-day-grid-event", "fc-h-event", "fc-event", "fc-start", "fc-end", "fc-draggable","show"],
+            start: '2019-11-07T17:15',
+            duration: '01:00',
+            backgroundColor: '#F9AA0D',
+            firstName: 'Gor',
+            lastName: 'Gharagyozyan',
+            message: 'verevi dzax atami plomb piti drvi',
+            phone : '055599565' 
+          },    
         ],
         config: {
-          dayClick: function(date,jsEvent,view){
-            alert('clicked on' + date.getDate());
+          dayClick: ( date,jsEvent,view ) => {
+            // alert('clicked on' + date.format());
+            this.showModal = true;
+            this.filteredEvents = [];
+            this.filteredEvents = this.events.filter((item) => {
+              return item.start.indexOf( date.format() ) > -1
+            });
           },
           lacale: 'am',
+          eventBorderColor: 'transparent',
           selectable: false,
           droppable: false,
           editable:false,
+          eventLimit: 3,
           defaultView: 'month',
           defaultDate: this.day,
           displayEventTime:true,
-          weekNumbers:true,
-          header: {
-            left: "prev,next",
-            center: 'title',
+          header : {
+            left : "prev,next",
+            center : 'title',
             right : 'today'
           },
           eventMouseover : (event,jsEvent) => {
@@ -297,12 +364,10 @@ export default {
       let date = (new Date()).getTime();
       this.events.forEach(el => {
         if((new Date(el.start)).getTime() - date <= 60000 * this.notifyMeBefore && (new Date(el.start)).getTime() - date >= 0 && el.groupId == "accepted"){
-          let counter = 0;
           el.backgroundColor = 'yellow';
           let date = new Date(el.start);
           let string = `a${el.id} ${this.messageForUpcomingEvent} that starts at \` ${(date.getHours() >= 10 ? date.getHours() : "0" + date.getHours()) + ':' + (date.getMinutes() >= 10 ? date.getMinutes() : "0" + date.getMinutes())}`;
           if( this.notificArr.indexOf(string) == -1 ){
-            console.log('mtav');
             this.notificArr.push(string);
           }
         } 
@@ -341,9 +406,14 @@ export default {
         this.notificArr.push(string)
       }
     })
-
   } ,
   methods: {
+    closeModalWindow(){
+      this.showModal = false;
+    },
+    openModal(){
+      this.showModal = true;
+    },
     showCloud(){
       if(!this.flagForCloudVisibility){
         this.flagForCloudVisibility = true;
@@ -378,7 +448,8 @@ export default {
     },
   },
   components:{
-    EventCloud
+    EventCloud,
+    Modal
   }
 };
 </script>
@@ -395,15 +466,6 @@ export default {
 }
 .hide{
   display: none !important;
-}
-.fc-event{
-  /* width: 10px !important;
-  height: 10px !important;
-  border-radius: 100% !important; */
-  /* margin-top: -10px !important; */
-}
-.fc-event-container{
-  /* display:inline-flex; */
 }
 .fc-time{
   display: none !important;
@@ -448,10 +510,10 @@ export default {
 
 
 .bounce-enter-active {
-  animation: bounce-in .5s;
+  animation: bounce-in 0.5s;
 }
 .bounce-leave-active {
-  animation: bounce-in .5s reverse;
+  animation: bounce-in 0.5s reverse;
 }
 @keyframes bounce-in {
   0% {

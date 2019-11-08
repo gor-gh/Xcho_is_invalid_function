@@ -21,7 +21,7 @@ function createWindow () {
   win = new BrowserWindow({ 
     width: 1200, 
     height: 700, 
-    icon : path.join(__dirname,'../public/img/apple.png'),
+    icon : path.join(__dirname,'../public/img/logo.png'),
     title : 'Our App',
     webPreferences: {
       nodeIntegration: true

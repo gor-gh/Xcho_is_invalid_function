@@ -1,11 +1,12 @@
 <template>
-    <div id="menu_container" @mouseover="openMenu" @mouseout="closeMenu" :style="{width : menuOp ? '20%' : '5%'}">
+    <div id="menu_container" @mouseover="openMenu" @mouseout="closeMenu"  >
         <ul class="sidebar navbar-nav">
             <li>
                 <div class="d-flex but_cont" :class="menuOp ? 'justify-content-between' : 'justify-content-center'">
                     <span id="app_name" v-show="menuOp"> {{appN}} </span>
                         <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
-                            <font-awesome-icon icon="angry"></font-awesome-icon>
+                            <!-- <font-awesome-icon icon="angry"></font-awesome-icon> -->
+                            <img src="../../public/img/logo.png" class="image_logo" alt="">
                         </button>
                 </div>
             </li>
@@ -136,17 +137,19 @@ export default {
             console.log(this.menuOp);
             let links = document.querySelectorAll('.sidebar>.nav-item .nav-link');
             if(this.menuOp){
-                document.getElementById('menu_container').style.animationName = 'openMenu';
-                document.getElementById('menu_container').style.animationDirection = 'reverse';
-                document.getElementById('menu_container').style.animationDuration = '1s';
+                // document.getElementById('menu_container').style.animationName = 'openMenu';
+                // document.getElementById('menu_container').style.animationDirection = 'reverse';
+                // document.getElementById('menu_container').style.animationDuration = '1s';
+                document.getElementById('menu_container').style.width = '20%';
                 this.$emit('reduce_cal');
                 links.forEach(el => {
                     el.style.textAlign = 'left';
                 })
             }
             else{
-                document.getElementById('menu_container').style.animationName = 'openMenu';
-                document.getElementById('menu_container').style.animationDuration = '1s';
+                document.getElementById('menu_container').style.width = '5%';
+                // document.getElementById('menu_container').style.animationName = 'openMenu';
+                // document.getElementById('menu_container').style.animationDuration = '1s';
                 this.$emit('increase_cal');
                 links.forEach(el => {
                     el.style.textAlign = 'center';
@@ -242,22 +245,40 @@ export default {
     color: white;
     text-align: center;
 }
-
+.image_logo{
+    width: 40px;
+}
 
 /*animation */
 
 .anim_in{
-    animation: nested 0.5s;
+    animation: nested 0.8s;
 }
 .anim_out{
     animation: nested 0.5s reverse;
 }
+animation_in{
+    animation: open_menu 0.8;
+}
+animation_out{
+    animation: open_menu 0.8  reverse;
+}
+@keyframes open_menu{
+    0%{
+        width: 5%;
+    }
+    100%{
+        width: 20%;
+    }
+}
 @keyframes nested{
     0%{
         height: 0px;
+        opacity: 0;
     }
     100%{
         height: 90px;
+        opacity: 1;
     }
 }
 

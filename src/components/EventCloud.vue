@@ -1,5 +1,5 @@
 <template>
-    <div class="cloud_cont" @mouseover="showCloud" @mouseout="hideCloud">
+    <div class="cloud_cont" @mouseover="showCloud" @mouseout="hideCloud" id="cloud">
         <div class="event_cloud" >
             <ul id="cloud_messages">
                 <li v-for="(el,index) in cloudOp" :key="index" class="cloud_message_items"> {{el}} </li>
@@ -16,9 +16,15 @@
         methods:{
             showCloud(){
                 this.$emit('ShowCloud');
+                
+                
+
             },
             hideCloud(){
                 this.$emit('HideCloud');
+
+
+
             }
         }
     }

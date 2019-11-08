@@ -78,7 +78,11 @@ export default {
     border-width: 1px;
     margin-bottom: 5px;
     margin-top: 5px;
+    border-radius: 10px;
     border-color: var(--basic-text-color);
+}
+.notification_item:first-child{
+    margin-top: 10px;
 }
 .notification_item:hover{
     box-shadow: 0px 0px 15px var(--basic-text-color);
@@ -102,3 +106,8 @@ inside_text{
     box-shadow: 0px 0px 5px var(--basic-text-color);
 } */
 </style>
+
+
+
+
+
