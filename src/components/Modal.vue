@@ -13,21 +13,33 @@
                 </div>
             </div>
             <div class="body_container">
-                <div class="modal_left_block">
+                <div v-show="filArr.length == 0" class="no_text_container">
+                    <div class="no_event">
+                        <div class="no_event_text">
+                            There is no event to show
+                            <font-awesome-icon icon="smile"></font-awesome-icon>                    
+                        </div>
+                    </div>
+                </div>
+                <div class="modal_left_block" v-show="filArr.length != 0">
                     <ul class="event_list">
                         <li v-for="(el,index) in filArr" :key="index" :style="{ backgroundColor: el.backgroundColor }" class="event_list_info_item" @click="showEventInfo(index)">
                             {{el.firstName + " " + el.lastName + " " + el.startTime }}
                         </li>
                     </ul>
                 </div>
-                <div class="modal_right_block">
+                <div class="modal_right_block" v-show="filArr.length != 0">
                     <ul class="event_info" v-show="showEvInfo">
                         <li>Event's owner ` {{selectedEvent.firstName + " " + selectedEvent.lastName}} </li>
+                        <li>Phone number ` {{selectedEvent.phone}} </li>
                         <li>Event's start time` {{selectedEvent.startTime}} </li>
-                        <li></li>
-                        <li></li>
-                        <li></li>
+                        <li>Event's duration ` {{selectedEvent.duration}} </li>
+                        <li>More information ` {{selectedEvent.message}} </li>
                     </ul>
+                    <div v-if="selectedEvent.groupId == 'waiting' && showEvInfo" class="button_container">
+                        <button class="approve_btn butn" @click="appr(selectedEvent.id)">Approve</button>
+                        <button class="decline_btn butn" @click="decl(selectedEvent.id)">Decline</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -61,6 +73,12 @@ export default {
         showEventInfo(index){
             this.selectedEvent = this.filArr[index];
             this.showEvInfo = true;
+        },
+        appr(id){
+            this.$emit('apprEvent',id);
+        },
+        decl(evId){
+            this.$emit('declEvent',evId);
         }
     }
 }
@@ -93,6 +111,9 @@ export default {
         height: 10%;
         display: flex;
         justify-content: space-between;
+        border-bottom-style: solid;
+        border-color: var(--basic-background-color);
+        border-width: 1px;
     }
     .hidden_element, .close_item{
         width: 50px;
@@ -120,6 +141,18 @@ export default {
         display: flex;
         justify-content: space-between;
     }
+    .no_text_container{
+        height: 90%;
+        width: 100%;
+    }
+    .no_event{
+        width: 60%;
+
+        margin: 0 auto;
+        font-size: 25px;
+        margin-top: 50px; 
+    }
+    
     .modal_left_block{
         width: 50%;
         height: 100%;
@@ -134,6 +167,8 @@ export default {
         height: 100%;
         /* background-color: blue; */
         display: inline-block;
+        overflow-y: auto;
+        overflow-x: auto;
 
     }
     .event_list{
@@ -156,5 +191,29 @@ export default {
         width: 90%;
         margin: 0 auto;
         list-style-type: none;
+        margin-top: 20px;
+        height: auto;
+    }
+    .event_info > li{
+        height: auto;
+        margin: 10px 0px;
+    }
+    .butn{
+        font-size: 18px !important;
+        border-radius: 8px;
+        padding: 5px;
+        border: none;
+        color: var(--basic-background-color);
+    }
+    .approve_btn{
+        background-color: green;
+    }
+    .decline_btn{
+        background-color: red;
+    }
+    .button_container{
+        width: 100%;
+        display:flex;
+        justify-content: space-around;
     }
 </style>
